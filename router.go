@@ -1,31 +1,48 @@
 package idleaf
 
 import (
-	"github.com/gin-gonic/gin"
+	"encoding/json"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
-func JsonRspErr(c *gin.Context, code int, msg string) {
-	c.JSON(http.StatusOK, gin.H{"code": code, "msg": msg})
-	c.Abort()
+type Resp struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+	Id   int64  `json:"id"`
 }
 
-func GenDomainId(c *gin.Context) {
-	domain := c.Param("domain")
-	if domain == "" {
-		c.JSON(http.StatusOK, gin.H{"code": ErrInternal, "id": 0, "msg": "domain lost"})
+func jsonResp(resp *Resp, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	payload, err := json.Marshal(resp)
+	if err != nil {
+		payload = []byte(`{"code":1,"msg":"json marshal error","id":0}`)
+	}
+	_, _ = w.Write(payload)
+}
+
+func GenDomainId(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	domain, ok := vars["domain"]
+	rsp := &Resp{Code: ErrInternal}
+	if !ok || domain == "" {
+		rsp.Code = ErrDomainLost
+		rsp.Msg = "domain lost"
 	} else {
-		if id, err := idLeaf.GenId(domain); err != nil {
-			c.JSON(http.StatusOK, gin.H{"code": ErrInternal, "id": 0, "msg": err.Error()})
+		if id, err := idLeaf.GenId(domain); err == nil {
+			rsp.Code = ErrOK
+			rsp.Id = id
 		} else {
-			c.JSON(http.StatusOK, gin.H{"code": ErrOK, "msg": "succ", "id": id})
+			rsp.Code = ErrInternal
+			rsp.Msg = err.Error()
 		}
 	}
+	jsonResp(rsp, w)
 }
 
-func InitRouter() *gin.Engine {
-	router := gin.Default()
-	v1g := router.Group("/v1/")
-	v1g.GET("gen/:domain", GenDomainId)
+func InitRouter() *mux.Router {
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/v1/gen/{domain}", GenDomainId)
 	return router
 }

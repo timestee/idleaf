@@ -2,34 +2,37 @@ package idleaf
 
 import (
 	"encoding/json"
-	"github.com/timestee/goconf"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/mux"
+	"github.com/timestee/goconf"
 )
 
-var router *gin.Engine
+var router *mux.Router
+var testMysql = false
 
 func TestMain(m *testing.M) {
 	ops := &Option{}
 	goconf.MustResolve(ops)
-	Init(ops)
+	err := Init(ops)
+	if err == nil{
+		testMysql = true
+	}
 	router = InitRouter()
 	m.Run()
 }
 
-func genid(t testing.TB, domain string) {
+func gen(t testing.TB, domain string) {
+	if !testMysql {
+		return
+	}
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/v1/gen/"+domain, nil)
 	router.ServeHTTP(w, req)
-	idRet := &struct {
-		Code int    `json:"code"`
-		Msg  string `json:"msg"`
-		Id   int64  `json:"id"`
-	}{}
+	idRet := &Resp{}
 	err := json.NewDecoder(w.Body).Decode(idRet)
 	if err != nil {
 		t.Fail()
@@ -40,13 +43,13 @@ func genid(t testing.TB, domain string) {
 }
 
 func TestGenId(t *testing.T) {
-	genid(t, "test")
+	gen(t, "test")
 }
 
 func BenchmarkGenIdDomainOid(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			genid(b, "oid")
+			gen(b, "oid")
 		}
 	})
 }
@@ -54,7 +57,9 @@ func BenchmarkGenIdDomainOid(b *testing.B) {
 func BenchmarkGenIdDomainUid(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			genid(b, "uid")
+			gen(b, "uid")
 		}
 	})
 }
+
+

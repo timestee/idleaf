@@ -3,13 +3,13 @@ package main
 import (
 	"github.com/timestee/goconf"
 	"github.com/timestee/idleaf"
+	"log"
+	"net/http"
 )
 
 func main() {
-	ops := &idleaf.Option{}
-	goconf.MustResolve(ops)
-
-	idleaf.Init(ops)
-	router := idleaf.InitRouter()
-	router.Run(ops.ServerPort)
+	option := &idleaf.Option{}
+	goconf.MustResolve(option)
+	idleaf.MustCheckError(idleaf.Init(option))
+	log.Fatal(http.ListenAndServe(option.ServerPort, idleaf.InitRouter()))
 }

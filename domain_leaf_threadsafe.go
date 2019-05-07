@@ -11,8 +11,8 @@ type DomainLeafThreadsafe struct {
 	lock sync.Mutex
 }
 
-func newDomainLeafThreadSafe(db *sql.DB, domain string, table string, id_offset int64) (*DomainLeafThreadsafe, error) {
-	leaf, err := newDomainLeafThreadUnsafe(db, domain, table, id_offset)
+func newDomainLeafThreadSafe(db *sql.DB, domain string, table string, idOffset int64) (*DomainLeafThreadsafe, error) {
+	leaf, err := newDomainLeafThreadUnsafe(db, domain, table, idOffset)
 	if err != nil {
 		return nil, err
 	}

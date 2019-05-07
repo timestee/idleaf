@@ -11,6 +11,6 @@ type DomainLeafIF interface {
 	Gen() (id int64, err error)
 }
 
-func NewDomainLeaf(db *sql.DB, domain string, table string, id_offset int64) (DomainLeafIF, error) {
-	return newDomainLeafThreadSafe(db, domain, table, id_offset)
+func NewDomainLeaf(db *sql.DB, domain string, table string, idOffset int64) (DomainLeafIF, error) {
+	return newDomainLeafThreadSafe(db, domain, table, idOffset)
 }
