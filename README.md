@@ -16,7 +16,7 @@ Generate batch ids through MySQL transcation way, dose not increase the load of 
                   \       |         /
                    \      |        /
                     \     |       /
-                     +----+------+
-			  |
-			 DB
+                    +----+------+
+                         |
+                         DB
 ```
