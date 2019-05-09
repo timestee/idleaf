@@ -12,7 +12,7 @@ type IdLeaf struct {
 	syncMap sync.Map
 }
 
-func NewIdLeaf(option *Option) (p *IdLeaf,err error) {
+func NewIdLeaf(option *Option) (p *IdLeaf, err error) {
 	p = new(IdLeaf)
 	p.option = option
 
@@ -24,7 +24,7 @@ func NewIdLeaf(option *Option) (p *IdLeaf,err error) {
 		p.option.DbPort,
 		p.option.DbName,
 	)
-	if p.db, err = sql.Open(p.option.DbProto, url);err != nil {
+	if p.db, err = sql.Open(p.option.DbProto, url); err != nil {
 		return
 	}
 	err = p.db.Ping()
@@ -49,6 +49,6 @@ func (p *IdLeaf) GenId(domain string) (int64, error) {
 var idLeaf *IdLeaf = nil
 
 func Init(option *Option) (err error) {
-	idLeaf,err = NewIdLeaf(option)
+	idLeaf, err = NewIdLeaf(option)
 	return
 }

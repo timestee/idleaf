@@ -18,7 +18,7 @@ func TestMain(m *testing.M) {
 	ops := &Option{}
 	goconf.MustResolve(ops)
 	err := Init(ops)
-	if err == nil{
+	if err == nil {
 		testMysql = true
 	}
 	router = InitRouter()
@@ -61,5 +61,3 @@ func BenchmarkGenIdDomainUid(b *testing.B) {
 		}
 	})
 }
-
-

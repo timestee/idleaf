@@ -10,11 +10,10 @@ var (
 )
 
 const (
-	ErrOK       = 0
-	ErrInternal = 1
+	ErrOK         = 0
+	ErrInternal   = 1
 	ErrDomainLost = 2
 )
-
 
 func MustCheckError(err error) {
 	if err != nil {
