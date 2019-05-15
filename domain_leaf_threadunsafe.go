@@ -18,8 +18,9 @@ const (
 	SqlFmtAddId        = "UPDATE %s SET id = id + %d where domain='%s'"
 	SqlFmtUpId         = "UPDATE %s SET id = %d where domain='%s'"
 	SqlFmtInsertDomain = "INSERT INTO %s(domain,id) VALUES('%s',%d)"
-	BuffedCount        = 2000
 )
+
+var BuffedCount = int64(2000)
 
 type DomainLeafThreadUnsafe struct {
 	table       string // leaf table name

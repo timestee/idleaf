@@ -44,6 +44,7 @@ func GenDomainId(w http.ResponseWriter, r *http.Request) {
 }
 
 func InitRouter(option *Option) *mux.Router {
+	BuffedCount = option.BuffedCount
 	withTimeout := func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx, cancel := context.WithTimeout(r.Context(), time.Duration(option.TimeoutSecond)*time.Second)

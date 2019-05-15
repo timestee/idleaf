@@ -11,9 +11,10 @@ type Option struct {
 	IdOffset      int64  `default:"1000000"`
 	DbProto       string `default:"mysql"`
 	DbUser        string `default:"root"`
-	DbPass        string `default:"123456"`
+	DbPass        string `default:"111111"`
 	DbHost        string `default:"127.0.0.1"`
 	DbPort        int    `default:"3306"`
-	DbName        string `default:"account"`
+	DbName        string `default:"idleaf"`
 	TimeoutSecond int    `default:"5"`
+	BuffedCount   int64  `default:"2000"`
 }

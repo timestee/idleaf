@@ -22,6 +22,7 @@ func NewIdLeaf(option *Option) (p *IdLeaf, err error) {
 		p.option.DbPort,
 		p.option.DbName,
 	)
+	fmt.Println(url)
 
 	if p.db, err = sql.Open(p.option.DbProto, url); err != nil {
 		return
