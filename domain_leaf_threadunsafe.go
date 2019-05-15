@@ -6,8 +6,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// using innodb row level lock
 const (
-	// using innodb row level lock
 	SqlCreateTableIfNotExist = `CREATE TABLE IF NOT EXISTS %s (
     	domain varchar(30) DEFAULT NULL,
     	id bigint(20) NOT NULL,
@@ -30,9 +30,9 @@ type DomainLeafThreadUnsafe struct {
 	db          *sql.DB
 }
 
-func newDomainLeafThreadUnsafe(db *sql.DB, domain string, leafName string, id_offset int64) (*DomainLeafThreadUnsafe, error) {
+func newDomainLeafThreadUnsafe(db *sql.DB, domain string, leafName string, idOffset int64) (*DomainLeafThreadUnsafe, error) {
 	leaf := &DomainLeafThreadUnsafe{db: db, domain: domain, buffed: BuffedCount, table: leafName}
-	return leaf, leaf.Reset(id_offset, false)
+	return leaf, leaf.Reset(idOffset, false)
 }
 
 func (p *DomainLeafThreadUnsafe) Reset(idOffset int64, force bool) error {
@@ -103,11 +103,10 @@ func (p *DomainLeafThreadUnsafe) getIdFromDb(buffed bool) (id int64, err error) 
 
 	defer rows.Close()
 
-	var found bool = false
+	found := false
 	// must clear query result
 	for rows.Next() {
-		err = rows.Scan(&id)
-		if err != nil {
+		if err = rows.Scan(&id); err != nil {
 			_ = tx.Rollback()
 			return
 		}
@@ -121,9 +120,7 @@ func (p *DomainLeafThreadUnsafe) getIdFromDb(buffed bool) (id int64, err error) 
 	}
 
 	if buffed {
-		sqlUpdateAddId := fmt.Sprintf(SqlFmtAddId, p.table, p.buffed, p.domain)
-		_, err = tx.Exec(sqlUpdateAddId)
-		if err != nil {
+		if _, err = tx.Exec(fmt.Sprintf(SqlFmtAddId, p.table, p.buffed, p.domain)); err != nil {
 			_ = tx.Rollback()
 			return
 		}

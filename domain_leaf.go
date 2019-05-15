@@ -5,12 +5,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type DomainLeafIF interface {
+type DomainLeaf interface {
 	Reset(int64, bool) error
 	Current() int64
 	Gen() (id int64, err error)
 }
 
-func NewDomainLeaf(db *sql.DB, domain string, table string, idOffset int64) (DomainLeafIF, error) {
+func NewDomainLeaf(db *sql.DB, domain string, table string, idOffset int64) (DomainLeaf, error) {
 	return newDomainLeafThreadSafe(db, domain, table, idOffset)
 }

@@ -13,10 +13,8 @@ type IdLeaf struct {
 }
 
 func NewIdLeaf(option *Option) (p *IdLeaf, err error) {
-	p = new(IdLeaf)
-	p.option = option
+	p = &IdLeaf{option: option}
 
-	//root:@tcp(127.0.0.1:3306)/test?charset=utf8
 	url := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8",
 		p.option.DbUser,
 		p.option.DbPass,
@@ -24,6 +22,7 @@ func NewIdLeaf(option *Option) (p *IdLeaf, err error) {
 		p.option.DbPort,
 		p.option.DbName,
 	)
+
 	if p.db, err = sql.Open(p.option.DbProto, url); err != nil {
 		return
 	}
@@ -32,7 +31,7 @@ func NewIdLeaf(option *Option) (p *IdLeaf, err error) {
 }
 
 func (p *IdLeaf) GenId(domain string) (int64, error) {
-	var leaf DomainLeafIF
+	var leaf DomainLeaf
 	var err error
 	if lif, ok := p.syncMap.Load(domain); !ok {
 		leaf, err = NewDomainLeaf(p.db, domain, p.option.LeafTable, p.option.IdOffset)
@@ -41,7 +40,7 @@ func (p *IdLeaf) GenId(domain string) (int64, error) {
 		}
 		p.syncMap.Store(domain, leaf)
 	} else {
-		leaf, _ = lif.(DomainLeafIF)
+		leaf, _ = lif.(DomainLeaf)
 	}
 	return leaf.Gen()
 }

@@ -18,6 +18,5 @@ const (
 func MustCheckError(err error) {
 	if err != nil {
 		log.Fatal(err)
-		panic(err)
 	}
 }

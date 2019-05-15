@@ -8,7 +8,7 @@ import (
 
 type DomainLeafThreadsafe struct {
 	leaf *DomainLeafThreadUnsafe
-	lock sync.Mutex
+	sync.Mutex
 }
 
 func newDomainLeafThreadSafe(db *sql.DB, domain string, table string, idOffset int64) (*DomainLeafThreadsafe, error) {
@@ -20,8 +20,8 @@ func newDomainLeafThreadSafe(db *sql.DB, domain string, table string, idOffset i
 }
 
 func (p *DomainLeafThreadsafe) Reset(idOffset int64, force bool) error {
-	p.lock.Lock()
-	defer p.lock.Unlock()
+	p.Lock()
+	defer p.Unlock()
 	return p.leaf.Reset(idOffset, force)
 }
 
@@ -30,13 +30,13 @@ func (p *DomainLeafThreadsafe) GetDomain() string {
 }
 
 func (p *DomainLeafThreadsafe) Current() int64 {
-	p.lock.Lock()
-	defer p.lock.Unlock()
+	p.Lock()
+	defer p.Unlock()
 	return p.leaf.Current()
 }
 
 func (p *DomainLeafThreadsafe) Gen() (int64, error) {
-	p.lock.Lock()
-	defer p.lock.Unlock()
+	p.Lock()
+	defer p.Unlock()
 	return p.leaf.Gen()
 }

@@ -21,7 +21,7 @@ func TestMain(m *testing.M) {
 	if err == nil {
 		testMysql = true
 	}
-	router = InitRouter()
+	router = InitRouter(ops)
 	m.Run()
 }
 
