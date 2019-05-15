@@ -1,9 +1,11 @@
 package idleaf
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
+	"time"
 )
 
 type Resp struct {
@@ -41,8 +43,15 @@ func GenDomainId(w http.ResponseWriter, r *http.Request) {
 	jsonResp(rsp, w)
 }
 
-func InitRouter() *mux.Router {
+func InitRouter(option *Option) *mux.Router {
+	withTimeout := func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx, cancel := context.WithTimeout(r.Context(), time.Duration(option.TimeoutSecond)*time.Second)
+			defer cancel()
+			h.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/v1/gen/{domain}", GenDomainId)
+	router.Handle("/v1/gen/{domain}", withTimeout(http.HandlerFunc(GenDomainId)))
 	return router
 }
