@@ -43,7 +43,7 @@ func genDomainId(w http.ResponseWriter, r *http.Request) {
 	jsonResp(rsp, w)
 }
 
-// init the router with options
+// InitRouter init the router with options
 func InitRouter(option *Option) *mux.Router {
 	buffedCount = option.BuffedCount
 	withTimeout := func(h http.Handler) http.Handler {

@@ -4,7 +4,7 @@ import (
 	"github.com/timestee/goconf"
 )
 
-// config options, like db info
+// Option is the config for leaf
 type Option struct {
 	goconf.AutoOptions
 	LeafTable     string `default:"id_leaf"`

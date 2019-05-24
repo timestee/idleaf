@@ -17,7 +17,7 @@ var testMysql = false
 func TestMain(m *testing.M) {
 	ops := &Option{}
 	goconf.MustResolve(ops)
-	err := Init(ops)
+	err := initLeaf(ops)
 	if err == nil {
 		testMysql = true
 	}

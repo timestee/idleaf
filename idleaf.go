@@ -46,9 +46,9 @@ func (p *leaf) genId(domain string) (int64, error) {
 	return leaf.Gen()
 }
 
-var idLeaf *leaf = nil
+var idLeaf *leaf
 
-func Init(option *Option) (err error) {
+func initLeaf(option *Option) (err error) {
 	idLeaf, err = newLeaf(option)
 	return
 }
