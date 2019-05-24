@@ -19,7 +19,7 @@ const (
 	SqlFmtInsertDomain = "INSERT INTO %s(domain,id) VALUES('%s',%d)"
 )
 
-var BuffedCount = int64(2000)
+var buffedCount = int64(2000)
 
 type domainLeafThreadUnsafe struct {
 	table       string // leaf table name
@@ -31,7 +31,7 @@ type domainLeafThreadUnsafe struct {
 }
 
 func newDomainLeafThreadUnsafe(db *sql.DB, domain string, leafName string, idOffset int64) (*domainLeafThreadUnsafe, error) {
-	leaf := &domainLeafThreadUnsafe{db: db, domain: domain, buffed: BuffedCount, table: leafName}
+	leaf := &domainLeafThreadUnsafe{db: db, domain: domain, buffed: buffedCount, table: leafName}
 	return leaf, leaf.Reset(idOffset, false)
 }
 

@@ -10,6 +10,6 @@ type domainLeaf interface {
 	Gen() (id int64, err error)
 }
 
-func NewDomainLeaf(db *sql.DB, domain string, table string, idOffset int64) (domainLeaf, error) {
+func newDomainLeaf(db *sql.DB, domain string, table string, idOffset int64) (domainLeaf, error) {
 	return newDomainLeafThreadSafe(db, domain, table, idOffset)
 }

@@ -6,14 +6,14 @@ import (
 	"sync"
 )
 
-type IdLeaf struct {
+type leaf struct {
 	option  *Option
 	db      *sql.DB
 	syncMap sync.Map
 }
 
-func NewIdLeaf(option *Option) (p *IdLeaf, err error) {
-	p = &IdLeaf{option: option}
+func newLeaf(option *Option) (p *leaf, err error) {
+	p = &leaf{option: option}
 
 	url := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8",
 		p.option.DbUser,
@@ -31,11 +31,11 @@ func NewIdLeaf(option *Option) (p *IdLeaf, err error) {
 	return
 }
 
-func (p *IdLeaf) GenId(domain string) (int64, error) {
+func (p *leaf) genId(domain string) (int64, error) {
 	var leaf domainLeaf
 	var err error
 	if lif, ok := p.syncMap.Load(domain); !ok {
-		leaf, err = NewDomainLeaf(p.db, domain, p.option.LeafTable, p.option.IdOffset)
+		leaf, err = newDomainLeaf(p.db, domain, p.option.LeafTable, p.option.IdOffset)
 		if err != nil {
 			return 0, err
 		}
@@ -46,9 +46,9 @@ func (p *IdLeaf) GenId(domain string) (int64, error) {
 	return leaf.Gen()
 }
 
-var idLeaf *IdLeaf = nil
+var idLeaf *leaf = nil
 
 func Init(option *Option) (err error) {
-	idLeaf, err = NewIdLeaf(option)
+	idLeaf, err = newLeaf(option)
 	return
 }

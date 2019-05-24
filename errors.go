@@ -9,7 +9,7 @@ var (
 )
 
 const (
-	ErrOK         = 0
-	ErrInternal   = 1
-	ErrDomainLost = 2
+	errOK         = 0
+	errInternal   = 1
+	errDomainLost = 2
 )

@@ -27,16 +27,16 @@ func jsonResp(resp *resp, w http.ResponseWriter) {
 func genDomainId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	domain, ok := vars["domain"]
-	rsp := &resp{Code: ErrInternal}
+	rsp := &resp{Code: errInternal}
 	if !ok || domain == "" {
-		rsp.Code = ErrDomainLost
+		rsp.Code = errDomainLost
 		rsp.Msg = "domain lost"
 	} else {
-		if id, err := idLeaf.GenId(domain); err == nil {
-			rsp.Code = ErrOK
+		if id, err := idLeaf.genId(domain); err == nil {
+			rsp.Code = errOK
 			rsp.Id = id
 		} else {
-			rsp.Code = ErrInternal
+			rsp.Code = errInternal
 			rsp.Msg = err.Error()
 		}
 	}
@@ -45,7 +45,7 @@ func genDomainId(w http.ResponseWriter, r *http.Request) {
 
 // init the router with options
 func InitRouter(option *Option) *mux.Router {
-	BuffedCount = option.BuffedCount
+	buffedCount = option.BuffedCount
 	withTimeout := func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx, cancel := context.WithTimeout(r.Context(), time.Duration(option.TimeoutSecond)*time.Second)
