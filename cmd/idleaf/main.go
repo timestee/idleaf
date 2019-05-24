@@ -11,7 +11,7 @@ import (
 func main() {
 	option := &idleaf.Option{}
 	goconf.MustResolve(option)
-	if err := idleaf.initLeaf(option); err != nil {
+	if err := idleaf.InitLeaf(option); err != nil {
 		log.Fatal(err)
 	}
 	log.Fatal(http.ListenAndServe(option.ServerPort, idleaf.InitRouter(option)))

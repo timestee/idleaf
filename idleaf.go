@@ -48,7 +48,8 @@ func (p *leaf) genId(domain string) (int64, error) {
 
 var idLeaf *leaf
 
-func initLeaf(option *Option) (err error) {
+// InitLeaf init the global leaf with given option
+func InitLeaf(option *Option) (err error) {
 	idLeaf, err = newLeaf(option)
 	return
 }
