@@ -8,13 +8,13 @@ import (
 	"time"
 )
 
-type Resp struct {
+type resp struct {
 	Code int    `json:"code"`
 	Msg  string `json:"msg"`
 	Id   int64  `json:"id"`
 }
 
-func jsonResp(resp *Resp, w http.ResponseWriter) {
+func jsonResp(resp *resp, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	payload, err := json.Marshal(resp)
@@ -24,10 +24,10 @@ func jsonResp(resp *Resp, w http.ResponseWriter) {
 	_, _ = w.Write(payload)
 }
 
-func GenDomainId(w http.ResponseWriter, r *http.Request) {
+func genDomainId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	domain, ok := vars["domain"]
-	rsp := &Resp{Code: ErrInternal}
+	rsp := &resp{Code: ErrInternal}
 	if !ok || domain == "" {
 		rsp.Code = ErrDomainLost
 		rsp.Msg = "domain lost"
@@ -43,6 +43,7 @@ func GenDomainId(w http.ResponseWriter, r *http.Request) {
 	jsonResp(rsp, w)
 }
 
+// init the router with options
 func InitRouter(option *Option) *mux.Router {
 	BuffedCount = option.BuffedCount
 	withTimeout := func(h http.Handler) http.Handler {
@@ -53,6 +54,6 @@ func InitRouter(option *Option) *mux.Router {
 		})
 	}
 	router := mux.NewRouter().StrictSlash(true)
-	router.Handle("/v1/gen/{domain}", withTimeout(http.HandlerFunc(GenDomainId)))
+	router.Handle("/v1/gen/{domain}", withTimeout(http.HandlerFunc(genDomainId)))
 	return router
 }

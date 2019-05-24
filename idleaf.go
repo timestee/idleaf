@@ -32,7 +32,7 @@ func NewIdLeaf(option *Option) (p *IdLeaf, err error) {
 }
 
 func (p *IdLeaf) GenId(domain string) (int64, error) {
-	var leaf DomainLeaf
+	var leaf domainLeaf
 	var err error
 	if lif, ok := p.syncMap.Load(domain); !ok {
 		leaf, err = NewDomainLeaf(p.db, domain, p.option.LeafTable, p.option.IdOffset)
@@ -41,7 +41,7 @@ func (p *IdLeaf) GenId(domain string) (int64, error) {
 		}
 		p.syncMap.Store(domain, leaf)
 	} else {
-		leaf, _ = lif.(DomainLeaf)
+		leaf, _ = lif.(domainLeaf)
 	}
 	return leaf.Gen()
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/timestee/goconf"
 	"github.com/timestee/idleaf"
 	"log"
@@ -10,6 +11,8 @@ import (
 func main() {
 	option := &idleaf.Option{}
 	goconf.MustResolve(option)
-	idleaf.MustCheckError(idleaf.Init(option))
+	if err := idleaf.Init(option); err != nil {
+		log.Fatal(err)
+	}
 	log.Fatal(http.ListenAndServe(option.ServerPort, idleaf.InitRouter(option)))
 }

@@ -3,7 +3,6 @@ package idleaf
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 // using innodb row level lock
@@ -22,7 +21,7 @@ const (
 
 var BuffedCount = int64(2000)
 
-type DomainLeafThreadUnsafe struct {
+type domainLeafThreadUnsafe struct {
 	table       string // leaf table name
 	domain      string // domain name
 	buffed      int64  // get buffed ids from db once
@@ -31,12 +30,12 @@ type DomainLeafThreadUnsafe struct {
 	db          *sql.DB
 }
 
-func newDomainLeafThreadUnsafe(db *sql.DB, domain string, leafName string, idOffset int64) (*DomainLeafThreadUnsafe, error) {
-	leaf := &DomainLeafThreadUnsafe{db: db, domain: domain, buffed: BuffedCount, table: leafName}
+func newDomainLeafThreadUnsafe(db *sql.DB, domain string, leafName string, idOffset int64) (*domainLeafThreadUnsafe, error) {
+	leaf := &domainLeafThreadUnsafe{db: db, domain: domain, buffed: BuffedCount, table: leafName}
 	return leaf, leaf.Reset(idOffset, false)
 }
 
-func (p *DomainLeafThreadUnsafe) Reset(idOffset int64, force bool) error {
+func (p *domainLeafThreadUnsafe) Reset(idOffset int64, force bool) error {
 	var err error
 	// create table if not exist
 	_, err = p.db.Exec(fmt.Sprintf(SqlCreateTableIfNotExist, p.table))
@@ -47,7 +46,7 @@ func (p *DomainLeafThreadUnsafe) Reset(idOffset int64, force bool) error {
 	// create domain row if not exist
 	p.idCurrent, err = p.getIdFromDb(false)
 	if err != nil {
-		if err == ErrDomainLeafLost {
+		if err == errDomainLeafLost {
 			sqlInsertDomain := fmt.Sprintf(SqlFmtInsertDomain, p.table, p.domain, idOffset)
 			_, err = p.db.Exec(sqlInsertDomain)
 			if err != nil {
@@ -74,7 +73,7 @@ func (p *DomainLeafThreadUnsafe) Reset(idOffset int64, force bool) error {
 	return err
 }
 
-func (p *DomainLeafThreadUnsafe) Init() (err error) {
+func (p *domainLeafThreadUnsafe) Init() (err error) {
 	if p.idCurrent, err = p.getIdFromDb(false); err != nil {
 		return
 	}
@@ -82,11 +81,11 @@ func (p *DomainLeafThreadUnsafe) Init() (err error) {
 	return
 }
 
-func (p *DomainLeafThreadUnsafe) Current() int64 {
+func (p *domainLeafThreadUnsafe) Current() int64 {
 	return p.idCurrent
 }
 
-func (p *DomainLeafThreadUnsafe) getIdFromDb(buffed bool) (id int64, err error) {
+func (p *domainLeafThreadUnsafe) getIdFromDb(buffed bool) (id int64, err error) {
 
 	sqlSelForUp := fmt.Sprintf(SqlFmtSelForUp, p.table, p.domain)
 
@@ -115,7 +114,7 @@ func (p *DomainLeafThreadUnsafe) getIdFromDb(buffed bool) (id int64, err error) 
 	}
 
 	if found == false {
-		err = ErrDomainLeafLost
+		err = errDomainLeafLost
 		_ = tx.Rollback()
 		return
 	}
@@ -131,7 +130,7 @@ func (p *DomainLeafThreadUnsafe) getIdFromDb(buffed bool) (id int64, err error) 
 	return id, nil
 }
 
-func (p *DomainLeafThreadUnsafe) Gen() (id int64, err error) {
+func (p *domainLeafThreadUnsafe) Gen() (id int64, err error) {
 	if p.idBuffedMax < p.idCurrent+1 {
 		if id, err = p.getIdFromDb(true); err != nil {
 			return

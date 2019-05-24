@@ -32,7 +32,7 @@ func gen(t testing.TB, domain string) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/v1/gen/"+domain, nil)
 	router.ServeHTTP(w, req)
-	idRet := &Resp{}
+	idRet := &resp{}
 	err := json.NewDecoder(w.Body).Decode(idRet)
 	if err != nil {
 		t.Fail()

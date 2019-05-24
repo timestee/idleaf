@@ -2,40 +2,39 @@ package idleaf
 
 import (
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 	"sync"
 )
 
-type DomainLeafThreadsafe struct {
-	leaf *DomainLeafThreadUnsafe
+type domainLeafThreadsafe struct {
+	leaf *domainLeafThreadUnsafe
 	sync.Mutex
 }
 
-func newDomainLeafThreadSafe(db *sql.DB, domain string, table string, idOffset int64) (*DomainLeafThreadsafe, error) {
+func newDomainLeafThreadSafe(db *sql.DB, domain string, table string, idOffset int64) (*domainLeafThreadsafe, error) {
 	leaf, err := newDomainLeafThreadUnsafe(db, domain, table, idOffset)
 	if err != nil {
 		return nil, err
 	}
-	return &DomainLeafThreadsafe{leaf: leaf}, nil
+	return &domainLeafThreadsafe{leaf: leaf}, nil
 }
 
-func (p *DomainLeafThreadsafe) Reset(idOffset int64, force bool) error {
+func (p *domainLeafThreadsafe) Reset(idOffset int64, force bool) error {
 	p.Lock()
 	defer p.Unlock()
 	return p.leaf.Reset(idOffset, force)
 }
 
-func (p *DomainLeafThreadsafe) GetDomain() string {
+func (p *domainLeafThreadsafe) GetDomain() string {
 	return p.leaf.domain
 }
 
-func (p *DomainLeafThreadsafe) Current() int64 {
+func (p *domainLeafThreadsafe) Current() int64 {
 	p.Lock()
 	defer p.Unlock()
 	return p.leaf.Current()
 }
 
-func (p *DomainLeafThreadsafe) Gen() (int64, error) {
+func (p *domainLeafThreadsafe) Gen() (int64, error) {
 	p.Lock()
 	defer p.Unlock()
 	return p.leaf.Gen()
