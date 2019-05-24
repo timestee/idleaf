@@ -4,12 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	"sync"
+
+	"github.com/timestee/golib/singleflight"
 )
 
 type leaf struct {
 	option  *Option
 	db      *sql.DB
 	syncMap sync.Map
+	sf      singleflight.Group
 }
 
 func newLeaf(option *Option) (p *leaf, err error) {
@@ -33,14 +36,21 @@ func newLeaf(option *Option) (p *leaf, err error) {
 
 func (p *leaf) genId(domain string) (int64, error) {
 	var leaf domainLeaf
-	var err error
-	if lif, ok := p.syncMap.Load(domain); !ok {
-		leaf, err = newDomainLeaf(p.db, domain, p.option.LeafTable, p.option.IdOffset)
+
+	if lif, ok := p.syncMap.Load(domain); ok {
+		leaf, _ = lif.(domainLeaf)
+	} else {
+		lif, err := p.sf.Do(domain, func() (i interface{}, e error) {
+			// newDomainLeaf will check table, create domain row if not exist
+			leaf, err := newDomainLeaf(p.db, domain, p.option.LeafTable, p.option.IdOffset)
+			if err == nil {
+				p.syncMap.Store(domain, leaf)
+			}
+			return leaf, err
+		})
 		if err != nil {
 			return 0, err
 		}
-		p.syncMap.Store(domain, leaf)
-	} else {
 		leaf, _ = lif.(domainLeaf)
 	}
 	return leaf.Gen()
