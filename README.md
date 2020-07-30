@@ -1,10 +1,8 @@
 Note: This project is no longer actively maintained. Replaced by siid for much better performance(funplus internal use only now).
 
-Sequence Int ID
-Benchmark Results
-```shell
-
+siid Benchmark Results
 With Go 1.13.4 darwin/amd64 on a 2.2 GHz Intel Core i7 16GB. Like all benchmarks, take these with a grain of salt.
+```shell
 
 goos: darwin
 goarch: amd64
